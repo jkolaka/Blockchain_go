@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+
+
 type Block struct {
 	nonce        int
 	previousHash [32]byte
@@ -26,23 +28,22 @@ func NewBlock(nonce int, previousHash [32]byte) *Block {
 
 func (b *Block) Print() {
 	fmt.Printf("timestamp     %d\n", b.timeStamp)
-	fmt.Printf("nonce     %d\n", b.nonce)
-	fmt.Printf("previous_hash     %x\n", b.previousHash)
-	fmt.Printf("transactions     %s\n", b.transactions)
+	fmt.Printf("nonce         %d\n", b.nonce)
+	fmt.Printf("previous_hash %x\n", b.previousHash)
+	fmt.Printf("transactions  %s\n", b.transactions)
 }
 
 func (b *Block) Hash() [32]byte {
 	m, _ := json.Marshal(b)
-	fmt.Println(string(m))
-	return sha256.Sum256([]byte(m))
+	return sha256.Sum256(m)
 }
 
 func (b *Block) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct {
-		Timestamp    int64 `json:"timestamp"`
-		Nonce        int  `json:"nonce"`
+		Timestamp    int64    `json:"timestamp"`
+		Nonce        int      `json:"nonce"`
 		PreviousHash [32]byte `json:"previous_hash"`
-		Transactions []string `json: "transactions"`
+		Transactions []string `json:"transactions"`
 	}{
 		Timestamp:    b.timeStamp,
 		Nonce:        b.nonce,
@@ -57,9 +58,9 @@ type Blockchain struct {
 }
 
 func NewBlockChain() *Blockchain {
-	b := &Block{}
 	bc := new(Blockchain)
-	bc.CreateBlock(0, b.Hash())
+	genesis := NewBlock(0, [32]byte{})
+	bc.chain = append(bc.chain, genesis)
 	return bc
 }
 
@@ -67,6 +68,10 @@ func (bc *Blockchain) CreateBlock(nonce int, previousHash [32]byte) *Block {
 	b := NewBlock(nonce, previousHash)
 	bc.chain = append(bc.chain, b)
 	return b
+}
+
+func (bc *Blockchain) LastBlock() *Block {
+	return bc.chain[len(bc.chain)-1]
 }
 
 func (bc *Blockchain) Print() {
@@ -82,14 +87,20 @@ func init() {
 }
 
 func main() {
-	block := &Block{nonce: 1}
-	fmt.Printf("%x\n", block.Hash())
-	/*
-		blockChain := NewBlockChain()
-		blockChain.Print()
-		blockChain.CreateBlock(5, "hash 1")
-		blockChain.Print()
-		blockChain.CreateBlock(2, "hash 2")
-		blockChain.Print()
-	*/
+	blockChain := NewBlockChain()
+
+	previousHash1 := blockChain.LastBlock().Hash()
+	blockChain.CreateBlock(5, previousHash1)
+	
+	previousHash2 := blockChain.LastBlock().Hash()
+	blockChain.CreateBlock(2, previousHash2)
+
+	blockChain.Print()
+}
+
+type Transaction struct {
+	senderBlockchainAddress string
+	recipientBlockchinAddress string
+	value float32
+	Wueh mzazi a
 }
