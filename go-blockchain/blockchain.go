@@ -102,5 +102,4 @@ type Transaction struct {
 	senderBlockchainAddress string
 	recipientBlockchinAddress string
 	value float32
-	Wueh mzazi a
 }
